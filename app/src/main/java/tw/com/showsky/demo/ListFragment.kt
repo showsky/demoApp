@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import tw.com.showsky.demo.adapter.MainListAdapter
 import tw.com.showsky.demo.data.AssetsData
-import tw.com.showsky.demo.databinding.ActivityMainBinding
 import tw.com.showsky.demo.databinding.FragmentListBinding
 import tw.com.showsky.demo.model.DataStatus
 import tw.com.showsky.demo.model.MainViewModel
@@ -72,7 +71,11 @@ class ListFragment : Fragment() {
         }
         mAdapter.setItemOnClickListener(object : MainListAdapter.ItemClickListener {
             override fun onClick(view: View, assetsData: AssetsData) {
-                val detailFragment = DetailFragment.newInstance(assetsData.contractAddress!!, assetsData.tokenId!!)
+                val detailFragment = DetailFragment.newInstance(
+                    assetsData.collectionName!!,
+                    assetsData.contractAddress!!,
+                    assetsData.tokenId!!
+                )
                 parentFragmentManager.beginTransaction()
                     .setReorderingAllowed(true)
                     .replace(R.id.fragmentContainerView, detailFragment)

@@ -24,8 +24,6 @@ class AssetDataDeserializer : JsonDeserializer<AssetData> {
             AssetData::class.java
         )
 
-        assetsData.collectionName = json.asJsonObject["asset_contract"].asJsonObject["name"].asString
-
         return assetsData
 
     }

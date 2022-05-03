@@ -1,5 +1,6 @@
 package tw.com.showsky.demo
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,13 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import tw.com.showsky.demo.databinding.FragmentDetailBinding
-import tw.com.showsky.demo.model.DataResult
 import tw.com.showsky.demo.model.DataStatus
 import tw.com.showsky.demo.model.MainViewModel
 import tw.com.showsky.demo.repository.OpenseaNetworkImpl
@@ -26,11 +26,13 @@ import tw.com.showsky.demo.repository.OpenseaNetworkImpl
 class DetailFragment : Fragment() {
 
     companion object {
+        const val KEY_COLLECTION_NAME = "collection_name"
         const val KEY_CONTRACT_ADDRESS = "contract_address"
         const val KEY_TOKEN_ID = "token_id"
 
-        fun newInstance(contractAddress: String, tokenId: String): DetailFragment {
-            val args = Bundle(2).apply {
+        fun newInstance(collectionName: String, contractAddress: String, tokenId: String): DetailFragment {
+            val args = Bundle(3).apply {
+                putString(KEY_COLLECTION_NAME, collectionName)
                 putString(KEY_CONTRACT_ADDRESS, contractAddress)
                 putString(KEY_TOKEN_ID, tokenId)
             }
@@ -54,6 +56,9 @@ class DetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         (requireActivity() as AppCompatActivity).supportActionBar?.apply {
+            arguments?.let {
+                title = it.getString(KEY_COLLECTION_NAME)
+            }
             setHomeButtonEnabled(true)
             setDisplayHomeAsUpEnabled(true)
         }
@@ -81,6 +86,15 @@ class DetailFragment : Fragment() {
         }
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        requireActivity().lifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onCreate(owner: LifecycleOwner) {
+                owner.lifecycle.removeObserver(this)
+            }
+        })
+    }
+
     private fun initView() {
         mViewModel.assetDataLiveData.observe(viewLifecycleOwner) { dataStatus ->
 
@@ -93,9 +107,6 @@ class DetailFragment : Fragment() {
                 DataStatus.SUCCESS -> {
                     mBind.progressView.visibility = View.GONE
                     dataStatus.data()?.let { assetData ->
-                        (requireActivity() as AppCompatActivity).supportActionBar?.apply {
-                            title = assetData.collectionName
-                        }
                         Glide.with(mBind.imageViewImage)
                             .load(assetData.imageUrl)
                             .into(mBind.imageViewImage)

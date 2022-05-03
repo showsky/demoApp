@@ -16,4 +16,6 @@ class AssetsData {
     var tokenId: String? = null
 
     var contractAddress: String? = null
+
+    var collectionName: String? = null
 }

@@ -26,6 +26,8 @@ class AssetsDataDeserializer : JsonDeserializer<AssetsData> {
 
         assetsData.contractAddress = json.asJsonObject["asset_contract"].asJsonObject["address"].asString
 
+        assetsData.collectionName = json.asJsonObject["collection"].asJsonObject["name"].asString
+
         return assetsData
 
     }

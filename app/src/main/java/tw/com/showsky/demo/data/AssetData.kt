@@ -7,8 +7,6 @@ import com.google.gson.annotations.SerializedName
  */
 class AssetData {
 
-    var collectionName: String? = null
-
     @SerializedName("image_url")
     var imageUrl: String? = null
 
